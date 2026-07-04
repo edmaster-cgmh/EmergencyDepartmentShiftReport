@@ -128,34 +128,86 @@
     </div>
 
     <script>
+        // 真正依「貼上內容」解析，不再使用寫死的假資料
         function parseERNote() {
-            // ... (保持之前的解析功能) ...
             const text = document.getElementById('originalRecord').value;
             const status = document.getElementById('pullStatus');
+            status.classList.remove('filled');
 
-            if (!text) {
+            if (!text.trim()) {
                 status.textContent = "⚠️ 請貼上 ER Note";
                 return;
             }
 
             status.textContent = "🔍 解析中...";
+
             setTimeout(() => {
-                document.getElementById('chiefComplaint').value = "怪異行為 for unknown period";
-                document.getElementById('abnormal').value = "怪異行為、妄想（警察是黑道）、amphetamine positive";
-                document.getElementById('history').value = "Schizophrenia?, r/o HCV, substance use (amphetamine+)";
-                document.getElementById('treatment').value = "Risperidone 1mg/tab";
-                document.getElementById('todo').value = "留觀 detox、amphetamine confirmation、精神科 follow";
-                document.getElementById('note').value = "防逃、24h陪伴、監測暴力風險";
+                const missing = []; // 記錄哪些欄位抓不到，需要人工確認
 
-                document.getElementById('bp').value = "109/59";
-                document.getElementById('hr').value = "61";
-                document.getElementById('rr').value = "13";
-                document.getElementById('spo2').value = "100";
-                document.getElementById('temp').value = "35.6";
+                // ---- 主訴 Chief complaint ----
+                const ccMatch = text.match(/Chief complaint[:：]\s*(.+)/i);
+                const chiefComplaint = ccMatch ? ccMatch[1].trim() : '';
+                if (!ccMatch) missing.push('主訴');
 
-                status.textContent = "✅ ER Note 解析完成";
+                // ---- 診斷（診斷碼 + 診斷名稱那一行，例如 "N939  Abnormal uterine..."）----
+                const diagMatch = text.match(/\n\s*([A-Z]\d{2,4}[A-Z]?)\s{2,}([A-Za-z][A-Za-z0-9 ,\-\/().]+)/);
+                const diagnosis = diagMatch ? `${diagMatch[1]} ${diagMatch[2].trim()}` : '';
+
+                document.getElementById('chiefComplaint').value =
+                    [chiefComplaint, diagnosis ? `（${diagnosis}）` : ''].filter(Boolean).join(' ');
+
+                // ---- Present illness -> 異常症狀 / 變化 ----
+                const piMatch = text.match(/Present illness[:：]\s*([\s\S]*?)(?:\n\s*Past history[:：]|理學檢查|$)/i);
+                document.getElementById('abnormal').value = piMatch ? piMatch[1].trim() : '';
+                if (!piMatch) missing.push('異常症狀/現病史');
+
+                // ---- Past history + Allergy -> 重要病史 / 過敏 ----
+                const phMatch = text.match(/Past history[:：]\s*([\s\S]*?)(?:\n\s*Allergy[:：]|理學檢查|$)/i);
+                const allergyMatch = text.match(/Allergy[:：]\s*(.+)/i);
+                const historyParts = [];
+                if (phMatch && phMatch[1].trim()) historyParts.push(phMatch[1].trim());
+                if (allergyMatch) historyParts.push('Allergy: ' + allergyMatch[1].trim());
+                document.getElementById('history').value = historyParts.join('\n');
+                if (historyParts.length === 0) missing.push('病史/過敏');
+
+                // ---- 生命徵象（若原文有寫才抓，沒有就留空，不亂填）----
+                const bp = text.match(/BP[:\s]*([\d]{2,3}\s*\/\s*[\d]{2,3})/i);
+                const hr = text.match(/\bHR[:\s]*([\d]{2,3})/i);
+                const rr = text.match(/\bRR[:\s]*([\d]{1,3})/i);
+                const spo2 = text.match(/Sp[O0]2[:\s]*([\d]{2,3})/i);
+                const temp = text.match(/Temp[:\s]*([\d]{2}\.?\d?)/i);
+                document.getElementById('bp').value = bp ? bp[1].replace(/\s+/g, '') : '';
+                document.getElementById('hr').value = hr ? hr[1] : '';
+                document.getElementById('rr').value = rr ? rr[1] : '';
+                document.getElementById('spo2').value = spo2 ? spo2[1] : '';
+                document.getElementById('temp').value = temp ? temp[1] : '';
+                if (!bp && !hr && !rr && !spo2 && !temp) missing.push('生命徵象（原文未寫）');
+
+                // ---- 開立醫囑/已執行處置 -> 已執行治療 / 給藥 ----
+                const orderBlockMatch = text.match(/檢驗項目[\s\S]*?\n([\s\S]*?)-{5,}/);
+                let orderLines = [];
+                if (orderBlockMatch) {
+                    orderLines = orderBlockMatch[1]
+                        .split('\n')
+                        .map(l => l.trim())
+                        .filter(l => l && !l.startsWith('.') && !/確認護理師/.test(l));
+                }
+                document.getElementById('treatment').value = orderLines.join('\n');
+                if (orderLines.length === 0) missing.push('已執行治療/給藥');
+
+                // ---- 待辦事項 / 特殊注意事項：無法可靠自動判斷，留空給人工填寫 ----
+                document.getElementById('todo').value = '';
+                document.getElementById('note').value = '';
+                missing.push('待辦事項', '特殊注意事項（需人工判斷）');
+
+                // 床號/年齡性別/病歷號通常不在 ER Note 文字內，不去猜測填假資料
+                missing.push('床號/年齡性別/病歷號（原文通常無此資訊，需人工填寫）');
+
+                status.textContent = missing.length
+                    ? `✅ 已依內容解析完成，以下欄位請人工確認：${missing.join('、')}`
+                    : "✅ ER Note 解析完成";
                 status.classList.add('filled');
-            }, 800);
+            }, 400);
         }
 
         // 切換至精簡版：把目前表單資料存進 URL 參數，再導向 ShiftReportSimple.html
