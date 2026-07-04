@@ -11,17 +11,15 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+            font-family: "Microsoft JhengHei", system-ui, sans-serif;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             color: #1e3a8a;
-            line-height: 1.6;
         }
         header {
             background: var(--primary);
             color: white;
-            padding: 2rem 0;
+            padding: 2.5rem 0;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .container {
             max-width: 1200px;
@@ -30,56 +28,16 @@
         }
         .hero {
             text-align: center;
-            padding: 4rem 0;
+            padding: 3rem 0;
         }
         .hero h1 {
-            font-size: 3.2rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
         }
-        .hero p {
-            font-size: 1.4rem;
-            max-width: 700px;
-            margin: 0 auto 2rem;
-        }
-        .btn {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 14px 32px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
-        }
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-10px);
-        }
-        .card h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-        nav {
+        .nav {
             background: white;
             padding: 1rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -87,20 +45,46 @@
         .nav-links {
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 2.5rem;
             list-style: none;
+            flex-wrap: wrap;
         }
         .nav-links a {
-            color: #1e3a8a;
+            color: var(--primary);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
-        .repo-info {
-            background: #f1f5f9;
-            padding: 1.5rem;
-            border-radius: 12px;
+        .nav-links a:hover {
+            background: #dbeafe;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
             margin: 3rem 0;
-            font-family: monospace;
+        }
+        .btn {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
         }
         footer {
             text-align: center;
@@ -112,66 +96,59 @@
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <ul class="nav-links">
-            <li><a href="#home">首頁</a></li>
-            <li><a href="ShiftReport/ShirtReportDetail.html">交班表單</a></li>
-            <li><a href="MedicationHistory/">用藥紀錄</a></li>
-            <li><a href="PastHistory/">過去病史</a></li>
-            <li><a href="#">關於專案</a></li>
+            <li><a href="#">首頁</a></li>
+            <li><a href="ShiftReport/ShirtReportDetail.html">智慧交班表單</a></li>
+            <li><a href="ShiftReport/ShiftReportSimple.html">簡易交班表單</a></li>
+            <li><a href="#">用藥紀錄</a></li>
+            <li><a href="#">過去病史</a></li>
         </ul>
     </nav>
 
     <header>
         <div class="container">
-            <h1>🩺 急診交班系統</h1>
-            <p>Emergency Department Shift Report System</p>
+            <h1>🩺 Emergency Department Shift Report</h1>
+            <p>急診交班系統 — 結構化・智慧抓取・提升病人安全</p>
         </div>
     </header>
 
-    <div class="container" id="home">
+    <div class="container">
         <div class="hero">
-            <h1>保障病人安全<br>提升交班效率</h1>
-            <p>專為急診室設計的結構化交班平台<br>採用 ISBAR 國際標準，支援快速填寫與團隊溝通</p>
-            
-            <a href="ShiftReport/ShirtReportDetail.html" class="btn">立即使用交班表單</a>
-            <a href="#" class="btn" style="background:#64748b;">觀看示範影片</a>
+            <h1>快速開始交班</h1>
+            <p style="font-size:1.3rem; max-width:700px; margin:0 auto 2rem;">
+                支援 ISBAR 標準，自動從病歷抓取資料
+            </p>
+            <a href="ShiftReport/ShirtReportDetail.html" class="btn">🚀 使用智慧交班表單</a>
+            <a href="ShiftReport/ShiftReportSimple.html" class="btn" style="background:#64748b;">📝 簡易版表單</a>
         </div>
 
         <div class="features">
             <div class="card">
+                <h3>📡 智慧抓取功能</h3>
+                <p>一鍵從病歷系統抓取病人資料，未填部分自動留空供補充。</p>
+            </div>
+            <div class="card">
                 <h3>📋 ISBAR 結構化交班</h3>
-                <p>Introduction、Situation、Background、Assessment、Recommendation 完整框架，減少遺漏。</p>
+                <p>符合國際標準，完整涵蓋現況、背景、評估與建議。</p>
             </div>
             <div class="card">
-                <h3>💊 用藥與病史管理</h3>
-                <p>快速查詢病人用藥紀錄與過去病史，提升交班準確度。</p>
-            </div>
-            <div class="card">
-                <h3>⚡ 即時團隊協作</h3>
-                <p>支援多班次交接、簽名確認與單位整體概況管理。</p>
+                <h3>⚡ 雙版本支援</h3>
+                <p>提供「智慧詳細版」與「簡易快速版」，適合不同情境使用。</p>
             </div>
         </div>
 
-        <div class="repo-info">
-            <strong>Repository:</strong> edmaster-cgmh / EmergencyDepartmentShiftReportPublic<br>
-            <strong>最近更新：</strong> ShiftReportDetail.html • 1 分鐘前<br><br>
-            <small>本專案為開放原始碼工具，歡迎醫護同仁貢獻與使用。</small>
-        </div>
-
-        <div style="text-align:center; margin: 3rem 0;">
-            <h2>快速入口</h2>
-            <p>
-                <a href="ShiftReport/ShirtReportDetail.html" class="btn">🚀 新增交班</a> &nbsp;&nbsp;
-                <a href="MedicationHistory/" class="btn" style="background:#10b981;">💊 用藥歷史</a> &nbsp;&nbsp;
-                <a href="PastHistory/" class="btn" style="background:#8b5cf6;">📖 過去病史</a>
-            </p>
+        <div style="text-align:center; margin:3rem 0; padding:2rem; background:#f8fafc; border-radius:12px;">
+            <h2>目前專案檔案</h2>
+            <p><strong>ShiftReport/</strong></p>
+            <p>• ShirtReportDetail.html　（智慧抓取版）</p>
+            <p>• ShiftReportSimple.html　（簡易版）</p>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Emergency Department Shift Report Public Project</p>
-        <p>Designed for clinical excellence • 專為急診醫護打造</p>
+        <p>&copy; 2026 edmaster-cgmh / EmergencyDepartmentShiftReport</p>
+        <p>開放原始碼專案｜專為急診醫護設計</p>
     </footer>
 </body>
 </html>
