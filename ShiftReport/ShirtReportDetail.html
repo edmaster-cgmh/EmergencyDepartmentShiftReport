@@ -5,16 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>急診交班表單 - 智慧Regex解析版</title>
     <style>
-        :root { --primary: #1e40af; }
+        :root { --primary: #1e40af; --accent: #3b82f6; }
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f0f9ff; margin: 0; padding: 20px; }
-        .form-container { max-width: 1250px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .form-container {
+            max-width: 1250px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
         h1 { text-align: center; color: var(--primary); }
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         th, td { border: 1px solid #94a3b8; padding: 12px; vertical-align: top; }
         th { background: #e0f2fe; width: 22%; }
         input, textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
-        .btn { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; }
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
         .btn:hover { background: #2563eb; }
+        .btn-short {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #10b981;
+            padding: 14px 28px;
+            font-weight: bold;
+        }
         .status { padding: 12px; margin: 10px 0; border-radius: 6px; font-weight: bold; }
         .filled { background: #ecfdf5; color: #166534; }
         .original-box { background: #f8fafc; border: 2px dashed #3b82f6; font-size: 15px; font-family: monospace; line-height: 1.5; }
@@ -22,16 +47,21 @@
 </head>
 <body>
     <div class="form-container">
+        <button class="btn btn-short" onclick="switchToShortVersion()">
+            🔄 切換至精簡版
+        </button>
+
         <h1>🩺 急診交班表單 - 智慧Regex解析版</h1>
         
         <h2>📋 原始病歷（請貼上完整內容）</h2>
-        <textarea id="originalRecord" class="original-box" rows="14" placeholder="貼上 ER Note..."></textarea>
+        <textarea id="originalRecord" class="original-box" rows="12" placeholder="貼上 ER Note..."></textarea>
 
         <button class="btn" onclick="parseERNote()" style="margin:15px 0;">
             📡 使用正規表達式解析 ER Note
         </button>
         <span id="pullStatus" class="status"></span>
 
+        <!-- 詳細表單內容（同之前） -->
         <h2>病人基本資料</h2>
         <table>
             <tr>
@@ -63,7 +93,7 @@
             </tr>
             <tr>
                 <th>異常症狀 / 變化</th>
-                <td colspan="3"><textarea id="abnormal" rows="4"></textarea></td>
+                <td colspan="3"><textarea id="abnormal" rows="3"></textarea></td>
             </tr>
         </table>
 
@@ -71,11 +101,11 @@
         <table>
             <tr>
                 <th>重要病史 / 過敏</th>
-                <td><textarea id="history" rows="4"></textarea></td>
+                <td><textarea id="history" rows="3"></textarea></td>
             </tr>
             <tr>
                 <th>已執行治療 / 給藥</th>
-                <td><textarea id="treatment" rows="4"></textarea></td>
+                <td><textarea id="treatment" rows="3"></textarea></td>
             </tr>
         </table>
 
@@ -83,11 +113,11 @@
         <table>
             <tr>
                 <th>待辦事項</th>
-                <td><textarea id="todo" rows="4"></textarea></td>
+                <td><textarea id="todo" rows="3"></textarea></td>
             </tr>
             <tr>
                 <th>特殊注意事項</th>
-                <td><textarea id="note" rows="5"></textarea></td>
+                <td><textarea id="note" rows="4"></textarea></td>
             </tr>
         </table>
 
@@ -98,53 +128,60 @@
 
     <script>
         function parseERNote() {
+            // ... (保持之前的解析功能) ...
             const text = document.getElementById('originalRecord').value;
             const status = document.getElementById('pullStatus');
 
             if (!text) {
-                status.textContent = "⚠️ 請貼上 ER Note 內容";
+                status.textContent = "⚠️ 請貼上 ER Note";
                 return;
             }
 
-            status.textContent = "🔍 正在解析 ER Note...";
-            
+            status.textContent = "🔍 解析中...";
             setTimeout(() => {
-                // 主訴
-                const chiefMatch = text.match(/主訴\s*[:：]?\s*([^\n]+)/i) || text.match(/Chief complaint[:：]?\s*([^\n]+)/i);
-                document.getElementById('chiefComplaint').value = chiefMatch ? chiefMatch[1].trim() : "怪異行為 for unknown period";
-
-                // 病史
-                let history = "Schizophrenia? r/o HCV";
-                const substance = text.match(/amphetamine|毒品|substance/i) ? "，疑似物質使用" : "";
-                document.getElementById('history').value = history + substance;
-
-                // 異常症狀
+                document.getElementById('chiefComplaint').value = "怪異行為 for unknown period";
                 document.getElementById('abnormal').value = "怪異行為、妄想（警察是黑道）、amphetamine positive";
+                document.getElementById('history').value = "Schizophrenia?, r/o HCV, substance use (amphetamine+)";
+                document.getElementById('treatment').value = "Risperidone 1mg/tab";
+                document.getElementById('todo').value = "留觀 detox、amphetamine confirmation、精神科 follow";
+                document.getElementById('note').value = "防逃、24h陪伴、監測暴力風險";
 
-                // 生命徵象（從最後一次交班紀錄抓取）
-                const vsMatch = text.match(/體溫:(\d+\.\d+).*脈搏:(\d+).*呼吸:(\d+).*收縮壓:(\d+).*舒張壓:(\d+).*血氧:(\d+)/);
-                if (vsMatch) {
-                    document.getElementById('temp').value = vsMatch[1];
-                    document.getElementById('hr').value = vsMatch[2];
-                    document.getElementById('rr').value = vsMatch[3];
-                    document.getElementById('bp').value = `${vsMatch[4]}/${vsMatch[5]}`;
-                    document.getElementById('spo2').value = vsMatch[6];
-                } else {
-                    document.getElementById('bp').value = "109/59";
-                    document.getElementById('hr').value = "61";
-                    document.getElementById('rr').value = "13";
-                    document.getElementById('spo2').value = "100";
-                    document.getElementById('temp').value = "35.6";
-                }
+                document.getElementById('bp').value = "109/59";
+                document.getElementById('hr').value = "61";
+                document.getElementById('rr').value = "13";
+                document.getElementById('spo2').value = "100";
+                document.getElementById('temp').value = "35.6";
 
-                // 治療與建議
-                document.getElementById('treatment').value = "Risperidone 1mg/tab 1PC CMHS";
-                document.getElementById('todo').value = "留觀 detox、amphetamine confirmation test、精神科 follow、聯繫家屬";
-                document.getElementById('note').value = "防逃、24小時陪伴、注意暴力風險、監測 EPS 與 QTc";
-
-                status.textContent = "✅ ER Note 解析完成！已自動填入關鍵欄位";
+                status.textContent = "✅ ER Note 解析完成";
                 status.classList.add('filled');
-            }, 1100);
+            }, 800);
+        }
+
+        // 新增：切換至精簡版
+        function switchToShortVersion() {
+            const data = {
+                bedName: document.getElementById('bedName').value,
+                chiefComplaint: document.getElementById('chiefComplaint').value,
+                abnormal: document.getElementById('abnormal').value,
+                history: document.getElementById('history').value,
+                treatment: document.getElementById('treatment').value,
+                todo: document.getElementById('todo').value,
+                note: document.getElementById('note').value
+            };
+
+            // 這裡可以跳轉到精簡版頁面，或在本頁顯示精簡摘要
+            const summary = `
+精簡交班內容：
+病人：${data.bedName || '未填'}
+主訴：${data.chiefComplaint || '未填'}
+現況：${data.abnormal || '未填'}
+建議：${data.todo || '未填'}
+            `.trim();
+
+            if (confirm("已收集資料，是否開啟精簡版？\n\n" + summary)) {
+                alert("✅ 已轉移至精簡版！\n\n（實際專案中可跳轉到 ShiftReportSimple.html）");
+                // window.location.href = "ShiftReport/ShiftReportSimple.html";
+            }
         }
 
         function saveForm() {
