@@ -1,111 +1,194 @@
-<table style="width:100%; border-collapse:collapse; margin:20px 0; font-size:16px;">
-    <thead>
-        <tr style="background:#1e40af; color:white;">
-            <th style="padding:12px; width:140px;">操作</th>
-            <th style="padding:12px;">項目</th>
-            <th style="padding:12px;">內容</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- 病人基本資料 -->
-        <tr>
-            <td rowspan="3" style="text-align:center; vertical-align:middle; background:#f0f9ff;">
-                <button onclick="saveToBackend(this)" 
-                        style="padding:10px 16px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer;">
-                    💾 儲存到後台
-                </button>
-            </td>
-            <td style="background:#e0f2fe; font-weight:bold;">床號 / 姓名</td>
-            <td><input type="text" style="width:100%; padding:8px;" placeholder="A12 - 陳小明"></td>
-        </tr>
-        <tr>
-            <td style="background:#e0f2fe; font-weight:bold;">年齡 / 性別 / 病歷號</td>
-            <td><input type="text" style="width:100%; padding:8px;" placeholder="68 歲 / 男 / CGMH202607040012"></td>
-        </tr>
-        <tr>
-            <td style="background:#e0f2fe; font-weight:bold;">就醫主訴 / 診斷</td>
-            <td><textarea style="width:100%; height:60px; padding:8px;" placeholder="胸痛2小時，疑似急性冠心症"></textarea></td>
-        </tr>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>急診交班 - 精簡版</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background: #f8fafc;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        th, td {
+            border: 1px solid #64748b;
+            padding: 12px 14px;
+            vertical-align: top;
+        }
+        th {
+            background: #1e40af;
+            color: white;
+            width: 180px;
+            text-align: center;
+        }
+        .action-col {
+            background: #f0f9ff;
+            text-align: center;
+            width: 120px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+        }
+        .btn-save {
+            padding: 10px 18px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-save:hover {
+            background: #059669;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #334155;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>急診交班 - 精簡版</h1>
+            <p>ISBAR 快速交班表格 • 一鍵儲存</p>
+        </div>
 
-        <!-- 最新生命徵象 -->
-        <tr>
-            <td rowspan="1" style="text-align:center; vertical-align:middle; background:#f0f9ff;">
-                <button onclick="saveToBackend(this)" 
-                        style="padding:10px 16px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer;">
-                    💾 儲存到後台
-                </button>
-            </td>
-            <td style="background:#e0f2fe; font-weight:bold;">最新生命徵象</td>
-            <td>
-                BP <input type="text" size="8" placeholder="142/88"> /
-                HR <input type="text" size="6" placeholder="98"> 
-                RR <input type="text" size="6" placeholder="22">
-                SpO₂ <input type="text" size="6" placeholder="94"> % 
-                Temp <input type="text" size="6" placeholder="37.2"> °C 
-                意識 <input type="text" size="10" placeholder="GCS 15">
-            </td>
-        </tr>
+        <table>
+            <thead>
+                <tr>
+                    <th class="action-col">操作</th>
+                    <th>項目</th>
+                    <th>內容</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 病人基本資料 -->
+                <tr>
+                    <td rowspan="3" class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>床號 / 姓名</strong></td>
+                    <td><input type="text" placeholder="A12 - 陳小明"></td>
+                </tr>
+                <tr>
+                    <td><strong>年齡 / 性別 / 病歷號</strong></td>
+                    <td><input type="text" placeholder="68 歲 / 男 / CGMH202607040012"></td>
+                </tr>
+                <tr>
+                    <td><strong>就醫主訴 / 診斷</strong></td>
+                    <td><textarea rows="2" placeholder="怪異行為 for unknown period"></textarea></td>
+                </tr>
 
-        <!-- 背景資料 -->
-        <tr>
-            <td rowspan="3" style="text-align:center; vertical-align:middle; background:#f0f9ff;">
-                <button onclick="saveToBackend(this)" 
-                        style="padding:10px 16px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer;">
-                    💾 儲存到後台
-                </button>
-            </td>
-            <td style="background:#e0f2fe; font-weight:bold;">重要病史 / 過敏</td>
-            <td><textarea style="width:100%; height:70px;" placeholder="高血壓、糖尿病、青黴素過敏"></textarea></td>
-        </tr>
-        <tr>
-            <td style="background:#e0f2fe; font-weight:bold;">已執行治療 / 給藥</td>
-            <td><textarea style="width:100%; height:70px;" placeholder="Aspirin 300mg 已給，Heparin 持續滴注"></textarea></td>
-        </tr>
-        <tr>
-            <td style="background:#e0f2fe; font-weight:bold;">檢驗 / 影像結果</td>
-            <td><textarea style="width:100%; height:70px;" placeholder="ECG：ST上升，Troponin：升高"></textarea></td>
-        </tr>
+                <!-- 最新生命徵象 -->
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>最新生命徵象</strong></td>
+                    <td>
+                        BP <input type="text" size="8" placeholder="109/59"> /
+                        HR <input type="text" size="6" placeholder="61"> 
+                        RR <input type="text" size="6" placeholder="13">
+                        SpO₂ <input type="text" size="6" placeholder="100"> %
+                        Temp <input type="text" size="6" placeholder="35.6"> °C
+                        意識 <input type="text" size="10" placeholder="E4V5M6">
+                    </td>
+                </tr>
 
-        <!-- Assessment -->
-        <tr>
-            <td rowspan="1" style="text-align:center; vertical-align:middle; background:#f0f9ff;">
-                <button onclick="saveToBackend(this)" 
-                        style="padding:10px 16px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer;">
-                    💾 儲存到後台
-                </button>
-            </td>
-            <td style="background:#e0f2fe; font-weight:bold;">A - Assessment（評估）</td>
-            <td><textarea style="width:100%; height:80px;" placeholder="目前問題 / 穩定度"></textarea></td>
-        </tr>
+                <!-- Background -->
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>重要病史 / 過敏</strong></td>
+                    <td><textarea rows="3" placeholder="Schizophrenia?, r/o HCV, Amphetamine 使用"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>已執行治療 / 給藥</strong></td>
+                    <td><textarea rows="3" placeholder="Risperidone 1mg/tab"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>檢驗 / 影像結果</strong></td>
+                    <td><textarea rows="3" placeholder="Amphetamine Positive, Chest X-ray normal"></textarea></td>
+                </tr>
 
-        <!-- Recommendation -->
-        <tr>
-            <td rowspan="2" style="text-align:center; vertical-align:middle; background:#f0f9ff;">
-                <button onclick="saveToBackend(this)" 
-                        style="padding:10px 16px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer;">
-                    💾 儲存到後台
-                </button>
-            </td>
-            <td style="background:#e0f2fe; font-weight:bold;">R - Recommendation（建議）</td>
-            <td><textarea style="width:100%; height:80px;" placeholder="待辦事項 / 追蹤（心導管、會診等）"></textarea></td>
-        </tr>
-        <tr>
-            <td style="background:#e0f2fe; font-weight:bold;">特殊注意事項</td>
-            <td><textarea style="width:100%; height:70px;" placeholder="家屬溝通、感染管制、心律監測"></textarea></td>
-        </tr>
-    </tbody>
-</table>
+                <!-- Assessment -->
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>A - Assessment（評估）</strong></td>
+                    <td><textarea rows="3" placeholder="Unspecified psychotic disorder, suspect substance related"></textarea></td>
+                </tr>
 
-<script>
-    function saveToBackend(btn) {
-        const row = btn.closest('tr');
-        btn.textContent = "✅ 已儲存";
-        btn.style.background = "#166534";
-        
-        setTimeout(() => {
-            alert("✅ 已成功儲存到後台！");
-            btn.textContent = "💾 儲存到後台";
-            btn.style.background = "#10b981";
-        }, 800);
-    }
-</script>
+                <!-- Recommendation -->
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>R - Recommendation（建議）</strong></td>
+                    <td><textarea rows="4" placeholder="留觀 detox、amphetamine confirmation test、精神科 follow"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="action-col">
+                        <button class="btn-save" onclick="saveRow(this)">💾 儲存到後台</button>
+                    </td>
+                    <td><strong>特殊注意事項</strong></td>
+                    <td><textarea rows="3" placeholder="防逃、24小時陪伴、監測暴力風險"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="text-align:center; margin-top:30px;">
+            <button class="btn" onclick="saveAll()" style="background:#1e40af; padding:14px 32px; font-size:17px;">
+                💾 全部儲存到後台
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function saveRow(btn) {
+            btn.textContent = "✅ 已儲存";
+            btn.style.background = "#166534";
+            setTimeout(() => {
+                btn.textContent = "💾 儲存到後台";
+                btn.style.background = "#10b981";
+            }, 1500);
+        }
+
+        function saveAll() {
+            alert("✅ 全部交班資料已儲存到後台！");
+        }
+    </script>
+</body>
+</html>
