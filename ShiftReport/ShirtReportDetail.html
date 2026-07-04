@@ -40,6 +40,7 @@
             padding: 14px 28px;
             font-weight: bold;
         }
+        .btn-short:hover { background: #059669; }
         .status { padding: 12px; margin: 10px 0; border-radius: 6px; font-weight: bold; }
         .filled { background: #ecfdf5; color: #166534; }
         .original-box { background: #f8fafc; border: 2px dashed #3b82f6; font-size: 15px; font-family: monospace; line-height: 1.5; }
@@ -157,11 +158,18 @@
             }, 800);
         }
 
-        // 新增：切換至精簡版
+        // 切換至精簡版：把目前表單資料存進 URL 參數，再導向 ShiftReportSimple.html
         function switchToShortVersion() {
             const data = {
                 bedName: document.getElementById('bedName').value,
+                ageGender: document.getElementById('ageGender').value,
+                mrn: document.getElementById('mrn').value,
                 chiefComplaint: document.getElementById('chiefComplaint').value,
+                bp: document.getElementById('bp').value,
+                hr: document.getElementById('hr').value,
+                rr: document.getElementById('rr').value,
+                spo2: document.getElementById('spo2').value,
+                temp: document.getElementById('temp').value,
                 abnormal: document.getElementById('abnormal').value,
                 history: document.getElementById('history').value,
                 treatment: document.getElementById('treatment').value,
@@ -169,19 +177,10 @@
                 note: document.getElementById('note').value
             };
 
-            // 這裡可以跳轉到精簡版頁面，或在本頁顯示精簡摘要
-            const summary = `
-精簡交班內容：
-病人：${data.bedName || '未填'}
-主訴：${data.chiefComplaint || '未填'}
-現況：${data.abnormal || '未填'}
-建議：${data.todo || '未填'}
-            `.trim();
-
-            if (confirm("已收集資料，是否開啟精簡版？\n\n" + summary)) {
-                alert("✅ 已轉移至精簡版！\n\n（實際專案中可跳轉到 ShiftReportSimple.html）");
-                // window.location.href = "ShiftReport/ShiftReportSimple.html";
-            }
+            // 用 base64 編碼整包資料，放進 URL 參數帶到精簡版頁面
+            const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+            // 兩個檔案在同一個資料夾（/ShiftReport/），所以用相對路徑即可
+            window.location.href = "ShiftReportSimple.html?data=" + encoded;
         }
 
         function saveForm() {
