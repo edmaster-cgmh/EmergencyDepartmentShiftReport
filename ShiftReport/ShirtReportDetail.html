@@ -3,217 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>急診室交班表單</title>
+    <title>急診交班表單 - 智慧抓取版</title>
     <style>
+        :root { --primary: #1e40af; }
         body {
-            font-family: "Microsoft JhengHei", "Arial", sans-serif;
-            margin: 20px;
-            background: #f9f9f9;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background: #f0f9ff;
+            margin: 0;
+            padding: 20px;
         }
         .form-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             background: white;
             padding: 30px;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        h1, h2 {
-            text-align: center;
-            color: #1e3a8a;
-        }
+        h1 { text-align: center; color: var(--primary); }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
         }
         th, td {
-            border: 1px solid #666;
-            padding: 10px;
+            border: 1px solid #94a3b8;
+            padding: 12px;
             vertical-align: top;
         }
         th {
-            background-color: #e0f2fe;
-            text-align: center;
-            width: 25%;
+            background: #e0f2fe;
+            width: 22%;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #1e3a8a;
-            padding-bottom: 10px;
-        }
-        .section {
-            margin-top: 25px;
-        }
-        textarea {
+        input, textarea, select {
             width: 100%;
-            height: 80px;
-            resize: vertical;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
         }
-        .signature {
-            margin-top: 40px;
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        @media print {
-            body { margin: 0; background: white; }
-            .form-container { box-shadow: none; padding: 15px; }
+        .btn:hover { background: #2563eb; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
         }
+        .filled { background: #ecfdf5; color: #166534; }
+        .empty { background: #fef3c7; color: #854d0e; }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <div class="header">
-            <h1>急診室 交班表單</h1>
-            <p><strong>ISBAR 結構化交班工具</strong>　｜　保障病人安全・連續性照護</p>
-        </div>
+        <h1>🩺 急診交班表單 - 智慧抓取版</h1>
+        <p style="text-align:center;">點擊下方按鈕模擬從病歷系統抓取資料</p>
 
-        <!-- 表單標頭 -->
+        <button class="btn" onclick="pullFromEMR()" style="margin-bottom:20px;">
+            📡 從病歷系統抓取資料
+        </button>
+        <span id="pullStatus" class="status"></span>
+
+        <!-- 病人基本資料 -->
+        <h2>病人基本資料</h2>
         <table>
             <tr>
-                <th>交班日期</th>
-                <td><input type="date" style="width:100%"></td>
-                <th>班別</th>
-                <td>
-                    <label><input type="radio" name="shift"> 白班</label>
-                    <label><input type="radio" name="shift"> 小夜</label>
-                    <label><input type="radio" name="shift"> 大夜</label>
-                </td>
+                <th>床號 / 姓名</th>
+                <td><input type="text" id="bedName" placeholder="例如：A12 - 陳小明"></td>
+                <th>年齡 / 性別</th>
+                <td><input type="text" id="ageGender"></td>
             </tr>
             <tr>
-                <th>交班人</th>
-                <td><input type="text" style="width:100%" placeholder="姓名 / 簽名"></td>
-                <th>接班人</th>
-                <td><input type="text" style="width:100%" placeholder="姓名 / 簽名"></td>
+                <th>病歷號</th>
+                <td><input type="text" id="mrn"></td>
+                <th>就醫主訴 / 診斷</th>
+                <td><input type="text" id="chiefComplaint"></td>
             </tr>
         </table>
 
-        <!-- 病人基本資料 -->
-        <div class="section">
-            <h2>病人基本資料</h2>
-            <table>
-                <tr>
-                    <th>床號 / 姓名</th>
-                    <td colspan="3"><input type="text" style="width:100%"></td>
-                </tr>
-                <tr>
-                    <th>年齡 / 性別 / 病歷號</th>
-                    <td colspan="3"><input type="text" style="width:100%"></td>
-                </tr>
-                <tr>
-                    <th>就醫主訴 / 診斷</th>
-                    <td colspan="3"><textarea></textarea></td>
-                </tr>
-            </table>
-        </div>
-
         <!-- ISBAR -->
-        <div class="section">
-            <h2>ISBAR 交班內容</h2>
-            
-            <h3>I - Introduction（介紹）</h3>
-            <table>
-                <tr>
-                    <th>病人位置</th>
-                    <td colspan="3"><input type="text" style="width:100%" placeholder="診間 / 搶救區 / 觀察室 / 留觀"></td>
-                </tr>
-            </table>
+        <h2>ISBAR 交班內容</h2>
 
-            <h3>S - Situation（現況）</h3>
-            <table>
-                <tr>
-                    <th>最新生命徵象</th>
-                    <td>BP <input type="text" size="8"> / <input type="text" size="8">　HR <input type="text" size="6">　RR <input type="text" size="6">　SpO₂ <input type="text" size="6"> %　Temp <input type="text" size="6"> °C　意識 <input type="text" size="10"></td>
-                </tr>
-                <tr>
-                    <th>異常症狀 / 變化</th>
-                    <td colspan="3"><textarea></textarea></td>
-                </tr>
-            </table>
+        <h3>I - Introduction（介紹）</h3>
+        <table>
+            <tr>
+                <th>病人位置</th>
+                <td colspan="3"><input type="text" id="location" placeholder="搶救區 / 觀察室"></td>
+            </tr>
+        </table>
 
-            <h3>B - Background（背景）</h3>
-            <table>
-                <tr>
-                    <th>重要病史 / 過敏</th>
-                    <td><textarea></textarea></td>
-                </tr>
-                <tr>
-                    <th>已執行治療 / 給藥</th>
-                    <td><textarea></textarea></td>
-                </tr>
-                <tr>
-                    <th>檢驗 / 影像結果</th>
-                    <td><textarea></textarea></td>
-                </tr>
-            </table>
+        <h3>S - Situation（現況）</h3>
+        <table>
+            <tr>
+                <th>最新生命徵象</th>
+                <td colspan="3">
+                    BP <input type="text" id="bp" size="8"> /
+                    HR <input type="text" id="hr" size="6"> 
+                    RR <input type="text" id="rr" size="6">
+                    SpO₂ <input type="text" id="spo2" size="6"> %
+                    Temp <input type="text" id="temp" size="6"> °C
+                </td>
+            </tr>
+            <tr>
+                <th>異常症狀 / 變化</th>
+                <td colspan="3"><textarea id="abnormal"></textarea></td>
+            </tr>
+        </table>
 
-            <h3>A - Assessment（評估）</h3>
-            <table>
-                <tr>
-                    <th>目前問題 / 穩定度</th>
-                    <td><textarea></textarea></td>
-                </tr>
-            </table>
+        <h3>B - Background（背景）</h3>
+        <table>
+            <tr>
+                <th>重要病史 / 過敏</th>
+                <td><textarea id="history"></textarea></td>
+            </tr>
+            <tr>
+                <th>已執行治療 / 給藥</th>
+                <td><textarea id="treatment"></textarea></td>
+            </tr>
+        </table>
 
-            <h3>R - Recommendation（建議）</h3>
-            <table>
-                <tr>
-                    <th>待辦事項 / 追蹤</th>
-                    <td><textarea></textarea></td>
-                </tr>
-                <tr>
-                    <th>特殊注意事項</th>
-                    <td><textarea></textarea></td>
-                </tr>
-            </table>
+        <h3>R - Recommendation（建議）</h3>
+        <table>
+            <tr>
+                <th>待辦事項</th>
+                <td><textarea id="todo"></textarea></td>
+            </tr>
+            <tr>
+                <th>特殊注意事項</th>
+                <td><textarea id="note"></textarea></td>
+            </tr>
+        </table>
+
+        <div style="text-align:center; margin-top:30px;">
+            <button class="btn" onclick="saveForm()">💾 儲存交班紀錄</button>
         </div>
-
-        <!-- 單位整體交班 -->
-        <div class="section">
-            <h2>單位整體交班重點</h2>
-            <table>
-                <tr>
-                    <th>目前總人數 / 重症數</th>
-                    <td><input type="text" style="width:100%"></td>
-                </tr>
-                <tr>
-                    <th>待入院 / 轉出病人</th>
-                    <td><textarea></textarea></td>
-                </tr>
-                <tr>
-                    <th>設備 / 藥品 / 人力特殊狀況</th>
-                    <td><textarea></textarea></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 簽名區 -->
-        <div class="signature">
-            <table>
-                <tr>
-                    <th>交班人簽名</th>
-                    <td style="height:80px"></td>
-                    <th>日期 / 時間</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>接班人簽名</th>
-                    <td style="height:80px"></td>
-                    <th>日期 / 時間</th>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-
-        <p style="text-align:center; margin-top:30px; color:#666; font-size:0.9em;">
-            此表單採用 ISBAR 結構設計　｜　建議列印或電子化使用
-        </p>
     </div>
 
     <script>
-        // 可選：按鈕列印
-        function printForm() {
-            window.print();
+        // 模擬病歷資料庫
+        const mockEMR = {
+            bedName: "A12 - 陳小明",
+            ageGender: "68 歲 / 男",
+            mrn: "CGMH202607040012",
+            chiefComplaint: "胸痛 2 小時，疑似急性冠心症",
+            location: "搶救區",
+            bp: "142/88",
+            hr: "98",
+            rr: "22",
+            spo2: "94",
+            temp: "37.2",
+            abnormal: "胸痛持續，ECG 顯示 ST 上升",
+            history: "高血壓、糖尿病、對青黴素過敏",
+            treatment: " Aspirin 300mg 已給，Heparin 持續滴注",
+            todo: "心導管檢查、會診心臟內科",
+            note: "家屬已告知病情，注意心律不整"
+        };
+
+        function pullFromEMR() {
+            const status = document.getElementById('pullStatus');
+            
+            // 模擬抓取延遲
+            status.textContent = "正在從病歷系統抓取資料...";
+            status.className = "status";
+
+            setTimeout(() => {
+                // 填入資料
+                document.getElementById('bedName').value = mockEMR.bedName || '';
+                document.getElementById('ageGender').value = mockEMR.ageGender || '';
+                document.getElementById('mrn').value = mockEMR.mrn || '';
+                document.getElementById('chiefComplaint').value = mockEMR.chiefComplaint || '';
+                document.getElementById('location').value = mockEMR.location || '';
+                document.getElementById('bp').value = mockEMR.bp || '';
+                document.getElementById('hr').value = mockEMR.hr || '';
+                document.getElementById('rr').value = mockEMR.rr || '';
+                document.getElementById('spo2').value = mockEMR.spo2 || '';
+                document.getElementById('temp').value = mockEMR.temp || '';
+                document.getElementById('abnormal').value = mockEMR.abnormal || '';
+                document.getElementById('history').value = mockEMR.history || '';
+                document.getElementById('treatment').value = mockEMR.treatment || '';
+                document.getElementById('todo').value = mockEMR.todo || '';
+                document.getElementById('note').value = mockEMR.note || '';
+
+                status.textContent = "✅ 已成功從病歷抓取資料（空白欄位請手動補填）";
+                status.classList.add('filled');
+            }, 800);
         }
+
+        function saveForm() {
+            alert("✅ 交班紀錄已儲存！（實際專案中會呼叫後端 API）");
+        }
+
+        // 頁面載入時提示
+        window.onload = () => {
+            console.log("%c急診智慧交班表單已載入", "color:#1e40af; font-size:14px;");
+        };
     </script>
 </body>
 </html>
