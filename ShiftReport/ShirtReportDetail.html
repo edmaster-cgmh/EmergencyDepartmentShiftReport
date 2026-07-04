@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .form-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 30px;
@@ -35,7 +35,7 @@
             background: #e0f2fe;
             width: 22%;
         }
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #cbd5e1;
@@ -49,8 +49,12 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
         .btn:hover { background: #2563eb; }
+        .btn-secondary {
+            background: #64748b;
+        }
         .status {
             padding: 10px;
             margin: 10px 0;
@@ -58,25 +62,36 @@
             font-weight: bold;
         }
         .filled { background: #ecfdf5; color: #166534; }
-        .empty { background: #fef3c7; color: #854d0e; }
+        .original-box {
+            background: #f8fafc;
+            border: 2px dashed #94a3b8;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
         <h1>🩺 急診交班表單 - 智慧抓取版</h1>
-        <p style="text-align:center;">點擊下方按鈕模擬從病歷系統抓取資料</p>
-
+        
         <button class="btn" onclick="pullFromEMR()" style="margin-bottom:20px;">
             📡 從病歷系統抓取資料
         </button>
         <span id="pullStatus" class="status"></span>
+
+        <!-- 原始病歷區塊 -->
+        <h2>📋 原始病歷（請貼上完整內容）</h2>
+        <textarea id="originalRecord" class="original-box" rows="8" 
+            placeholder="在此貼上從病歷系統複製的原始文字..."></textarea>
+
+        <button class="btn" onclick="simplifyAndFill()" style="margin-top:10px;">
+            ✨ 簡化內容 → 存儲到精簡版
+        </button>
 
         <!-- 病人基本資料 -->
         <h2>病人基本資料</h2>
         <table>
             <tr>
                 <th>床號 / 姓名</th>
-                <td><input type="text" id="bedName" placeholder="例如：A12 - 陳小明"></td>
+                <td><input type="text" id="bedName"></td>
                 <th>年齡 / 性別</th>
                 <td><input type="text" id="ageGender"></td>
             </tr>
@@ -88,14 +103,13 @@
             </tr>
         </table>
 
-        <!-- ISBAR -->
         <h2>ISBAR 交班內容</h2>
-
+        
         <h3>I - Introduction（介紹）</h3>
         <table>
             <tr>
                 <th>病人位置</th>
-                <td colspan="3"><input type="text" id="location" placeholder="搶救區 / 觀察室"></td>
+                <td colspan="3"><input type="text" id="location"></td>
             </tr>
         </table>
 
@@ -113,7 +127,7 @@
             </tr>
             <tr>
                 <th>異常症狀 / 變化</th>
-                <td colspan="3"><textarea id="abnormal"></textarea></td>
+                <td colspan="3"><textarea id="abnormal" rows="3"></textarea></td>
             </tr>
         </table>
 
@@ -121,11 +135,11 @@
         <table>
             <tr>
                 <th>重要病史 / 過敏</th>
-                <td><textarea id="history"></textarea></td>
+                <td><textarea id="history" rows="3"></textarea></td>
             </tr>
             <tr>
                 <th>已執行治療 / 給藥</th>
-                <td><textarea id="treatment"></textarea></td>
+                <td><textarea id="treatment" rows="3"></textarea></td>
             </tr>
         </table>
 
@@ -133,11 +147,11 @@
         <table>
             <tr>
                 <th>待辦事項</th>
-                <td><textarea id="todo"></textarea></td>
+                <td><textarea id="todo" rows="3"></textarea></td>
             </tr>
             <tr>
                 <th>特殊注意事項</th>
-                <td><textarea id="note"></textarea></td>
+                <td><textarea id="note" rows="3"></textarea></td>
             </tr>
         </table>
 
@@ -147,8 +161,7 @@
     </div>
 
     <script>
-        // 模擬病歷資料庫
-        const mockEMR = {
+        const mockEMR = { /* ... 原有 mock 資料不變 ... */ 
             bedName: "A12 - 陳小明",
             ageGender: "68 歲 / 男",
             mrn: "CGMH202607040012",
@@ -161,46 +174,46 @@
             temp: "37.2",
             abnormal: "胸痛持續，ECG 顯示 ST 上升",
             history: "高血壓、糖尿病、對青黴素過敏",
-            treatment: " Aspirin 300mg 已給，Heparin 持續滴注",
+            treatment: "Aspirin 300mg 已給，Heparin 持續滴注",
             todo: "心導管檢查、會診心臟內科",
             note: "家屬已告知病情，注意心律不整"
         };
 
         function pullFromEMR() {
             const status = document.getElementById('pullStatus');
-            
-            // 模擬抓取延遲
             status.textContent = "正在從病歷系統抓取資料...";
-            status.className = "status";
-
             setTimeout(() => {
-                // 填入資料
-                document.getElementById('bedName').value = mockEMR.bedName || '';
-                document.getElementById('ageGender').value = mockEMR.ageGender || '';
-                document.getElementById('mrn').value = mockEMR.mrn || '';
-                document.getElementById('chiefComplaint').value = mockEMR.chiefComplaint || '';
-                document.getElementById('location').value = mockEMR.location || '';
-                document.getElementById('bp').value = mockEMR.bp || '';
-                document.getElementById('hr').value = mockEMR.hr || '';
-                document.getElementById('rr').value = mockEMR.rr || '';
-                document.getElementById('spo2').value = mockEMR.spo2 || '';
-                document.getElementById('temp').value = mockEMR.temp || '';
-                document.getElementById('abnormal').value = mockEMR.abnormal || '';
-                document.getElementById('history').value = mockEMR.history || '';
-                document.getElementById('treatment').value = mockEMR.treatment || '';
-                document.getElementById('todo').value = mockEMR.todo || '';
-                document.getElementById('note').value = mockEMR.note || '';
-
-                status.textContent = "✅ 已成功從病歷抓取資料（空白欄位請手動補填）";
+                Object.keys(mockEMR).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = mockEMR[key];
+                });
+                status.textContent = "✅ 已成功從病歷抓取資料";
                 status.classList.add('filled');
             }, 800);
         }
 
-        function saveForm() {
-            alert("✅ 交班紀錄已儲存！（實際專案中會呼叫後端 API）");
+        // 簡化內容功能（模擬 AI 摘要）
+        function simplifyAndFill() {
+            const original = document.getElementById('originalRecord').value.trim();
+            if (!original) {
+                alert("請先在「原始病歷」欄位貼上內容！");
+                return;
+            }
+
+            // 模擬簡化處理
+            document.getElementById('abnormal').value = "胸痛持續，ECG ST 上升";
+            document.getElementById('history').value = "高血壓、糖尿病、青黴素過敏";
+            document.getElementById('treatment').value = "已給 Aspirin 300mg，Heparin 滴注";
+            document.getElementById('todo').value = "安排心導管，會診心臟科";
+            document.getElementById('note').value = "注意心律不整，家屬已知情";
+
+            alert("✅ 已簡化原始病歷並填入精簡版欄位！");
         }
 
-        // 頁面載入時提示
+        function saveForm() {
+            alert("✅ 交班紀錄已儲存！");
+        }
+
         window.onload = () => {
             console.log("%c急診智慧交班表單已載入", "color:#1e40af; font-size:14px;");
         };
